@@ -1,0 +1,21 @@
+[
+  {
+    "name": "SrD4rkOficial",
+    "master": true,
+    "password_hash": "$2a$11$vmghmB.rU0JRQoXvVpp9quXdS.yiKNbHtSRzxTelsme5ZzyRACstS",
+    "providers": {
+      "citizenfx": {
+        "id": "SrD4rkOficial",
+        "identifier": "fivem:5118848",
+        "data": {
+          "sub": "90e5d40cd1838e49a53844b9e4813caf",
+          "nameid": "https://forum.cfx.re/internal/user/5118848",
+          "name": "SrD4rkOficial",
+          "picture": "https://forum.cfx.re/user_avatar/forum.cfx.re/srd4rkoficial/256/2065690_2.png",
+          "profile": "https://forum.cfx.re/u/SrD4rkOficial"
+        }
+      }
+    },
+    "permissions": []
+  }
+]
