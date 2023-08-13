@@ -33,12 +33,12 @@ if IS_SERVER then
         ensure(args.eventCallback, 'function')
         local eventCallback = args.eventCallback
         local eventName = args.eventName
-        local eventData = RegisterNetEvent('Natural__server_callback:' .. eventName, function(packed, src, cb)
+        local eventData = RegisterNetEvent('SA__server_callback:' .. eventName, function(packed, src, cb)
             local source = tonumber(source)
             if not source then
                 cb(msgpack_pack_args(eventCallback(src, table_unpack(msgpack_unpack(packed)))))
             else
-                TriggerClientEvent(('Natural__client_callback_response:%s:%s'):format(eventName, source), source,
+                TriggerClientEvent(('SA__client_callback_response:%s:%s'):format(eventName, source), source,
                     msgpack_pack_args(eventCallback(source, table_unpack(msgpack_unpack(packed)))))
             end
         end)
@@ -60,11 +60,11 @@ if IS_SERVER then
             local prom = promise.new()
             local eventCallback = args.callback
             local eventData = RegisterNetEvent(
-                ('Natural__callback_retval:%s:%s:%s'):format(args.source, args.eventName, ticket), function(packed)
+                ('SA__callback_retval:%s:%s:%s'):format(args.source, args.eventName, ticket), function(packed)
                     if eventCallback and prom.state == PENDING then eventCallback(table_unpack(msgpack_unpack(packed))) end
                     prom:resolve(table_unpack(msgpack_unpack(packed)))
                 end)
-            TriggerClientEvent(('Natural__client_callback:%s'):format(args.eventName), args.source,
+            TriggerClientEvent(('SA__client_callback:%s'):format(args.eventName), args.source,
                 msgpack_pack(args.args or {}), ticket)
             if args.timeout ~= nil and args.timedout then
                 local timedout = args.timedout
@@ -100,7 +100,7 @@ if IS_SERVER then
         local prom = promise.new()
         local eventCallback = args.callback
         local eventName = args.eventName
-        TriggerEvent('Natural__server_callback:' .. eventName, msgpack_pack(args.args or {}), args.source,
+        TriggerEvent('SA__server_callback:' .. eventName, msgpack_pack(args.args or {}), args.source,
             function(packed)
                 if eventCallback and prom.state == PENDING then eventCallback(table_unpack(msgpack_unpack(packed))) end
                 prom:resolve(table_unpack(msgpack_unpack(packed)))
@@ -134,11 +134,11 @@ if not IS_SERVER then
         ensure(args.eventCallback, 'function')
         local eventCallback = args.eventCallback
         local eventName = args.eventName
-        local eventData = RegisterNetEvent('Natural__client_callback:' .. eventName, function(packed, ticket)
+        local eventData = RegisterNetEvent('SA__client_callback:' .. eventName, function(packed, ticket)
             if type(ticket) == 'function' then
                 ticket(msgpack_pack_args(eventCallback(table_unpack(msgpack_unpack(packed)))))
             else
-                TriggerServerEvent(('Natural__callback_retval:%s:%s:%s'):format(SERVER_ID, eventName, ticket),
+                TriggerServerEvent(('SA__callback_retval:%s:%s:%s'):format(SERVER_ID, eventName, ticket),
                     msgpack_pack_args(eventCallback(table_unpack(msgpack_unpack(packed)))))
             end
         end)
@@ -157,12 +157,12 @@ if not IS_SERVER then
         local prom = promise.new()
         local eventCallback = args.callback
         local eventData = RegisterNetEvent(
-            ('Natural__client_callback_response:%s:%s'):format(args.eventName, SERVER_ID),
+            ('SA__client_callback_response:%s:%s'):format(args.eventName, SERVER_ID),
             function(packed)
                 if eventCallback and prom.state == PENDING then eventCallback(table_unpack(msgpack_unpack(packed))) end
                 prom:resolve(table_unpack(msgpack_unpack(packed)))
             end)
-        TriggerServerEvent('Natural__server_callback:' .. args.eventName, msgpack_pack(args.args))
+        TriggerServerEvent('SA__server_callback:' .. args.eventName, msgpack_pack(args.args))
         if args.timeout ~= nil and args.timedout then
             local timedout = args.timedout
             SetTimeout(args.timeout * 1000, function()
@@ -193,7 +193,7 @@ if not IS_SERVER then
         local prom = promise.new()
         local eventCallback = args.callback
         local eventName = args.eventName
-        TriggerEvent('Natural__client_callback:' .. eventName, msgpack_pack(args.args or {}),
+        TriggerEvent('SA__client_callback:' .. eventName, msgpack_pack(args.args or {}),
             function(packed)
                 if eventCallback and prom.state == PENDING then eventCallback(table_unpack(msgpack_unpack(packed))) end
                 prom:resolve(table_unpack(msgpack_unpack(packed)))

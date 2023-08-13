@@ -17,5 +17,21 @@
       }
     },
     "permissions": []
+  },
+  {
+    "name": "Texugo",
+    "master": false,
+    "password_hash": "$2a$11$wIdKwi964GMAjpmcY65BfOyoL/FgT/JsVk09lGpPiaC0//WtK4Quy",
+    "password_temporary": true,
+    "providers": {
+      "discord": {
+        "id": "942409225517273098",
+        "identifier": "discord:942409225517273098",
+        "data": {}
+      }
+    },
+    "permissions": [
+      "all_permissions"
+    ]
   }
 ]

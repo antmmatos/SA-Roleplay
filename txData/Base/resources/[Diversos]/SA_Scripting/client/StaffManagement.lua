@@ -2,13 +2,13 @@ local isLinesOn = false
 local isNamesOn = false
 local playerList = {}
 
-RegisterNetEvent("Natural:Client:StaffManagement:SlayPlayer")
-AddEventHandler("Natural:Client:StaffManagement:SlayPlayer", function()
+RegisterNetEvent("SA:Client:StaffManagement:SlayPlayer")
+AddEventHandler("SA:Client:StaffManagement:SlayPlayer", function()
     SetEntityHealth(PlayerPedId(), 0)
 end)
 
-RegisterNetEvent("Natural:Client:StaffManagement:TPM")
-AddEventHandler("Natural:Client:StaffManagement:TPM", function()
+RegisterNetEvent("SA:Client:StaffManagement:TPM")
+AddEventHandler("SA:Client:StaffManagement:TPM", function()
     local WaypointHandle = GetFirstBlipInfoId(8)
     if DoesBlipExist(WaypointHandle) then
         local waypointCoords = GetBlipInfoIdCoord(WaypointHandle)
@@ -23,12 +23,12 @@ AddEventHandler("Natural:Client:StaffManagement:TPM", function()
     end
 end)
 
-RegisterNetEvent("Natural:Client:StaffManagement:txAdmin", function(args)
+RegisterNetEvent("SA:Client:StaffManagement:txAdmin", function(args)
     exports["monitor"]:txadmin(nil, args)
 end)
 
-RegisterNetEvent('Natural:Client:StaffManagement:SpawnVehicle')
-AddEventHandler('Natural:Client:StaffManagement:SpawnVehicle', function(vehicle)
+RegisterNetEvent('SA:Client:StaffManagement:SpawnVehicle')
+AddEventHandler('SA:Client:StaffManagement:SpawnVehicle', function(vehicle)
     if IsModelInCdimage(GetHashKey(vehicle)) then
         local ped = PlayerPedId()
         local playerCoords, playerHeading = GetEntityCoords(ped), GetEntityHeading(ped)
@@ -40,8 +40,8 @@ AddEventHandler('Natural:Client:StaffManagement:SpawnVehicle', function(vehicle)
     end
 end)
 
-RegisterNetEvent("Natural:Client:StaffManagement:PlayerMenu")
-AddEventHandler("Natural:Client:StaffManagement:PlayerMenu", function(playerData, group, id)
+RegisterNetEvent("SA:Client:StaffManagement:PlayerMenu")
+AddEventHandler("SA:Client:StaffManagement:PlayerMenu", function(playerData, group, id)
     local playerAccounts = {}
     for k, v in pairs(playerData.accounts) do
         playerAccounts[v.name] = v.money
@@ -74,8 +74,8 @@ AddEventHandler("Natural:Client:StaffManagement:PlayerMenu", function(playerData
     end)
 end)
 
-RegisterNetEvent("Natural:Client:StaffManagement:PlateMenu")
-AddEventHandler("Natural:Client:StaffManagement:PlateMenu", function(data, group, id)
+RegisterNetEvent("SA:Client:StaffManagement:PlateMenu")
+AddEventHandler("SA:Client:StaffManagement:PlateMenu", function(data, group, id)
     local playerAccounts = {}
     for k, v in pairs(data.accounts) do
         playerAccounts[v.name] = v.money
@@ -116,8 +116,8 @@ AddEventHandler("Natural:Client:StaffManagement:PlateMenu", function(data, group
     end)
 end)
 
-RegisterNetEvent("Natural:Client:StaffManagement:GiveVIPMenu")
-AddEventHandler("Natural:Client:StaffManagement:GiveVIPMenu", function(target, carTable)
+RegisterNetEvent("SA:Client:StaffManagement:GiveVIPMenu")
+AddEventHandler("SA:Client:StaffManagement:GiveVIPMenu", function(target, carTable)
     local elements = {}
     for i = 1, #carTable, 1 do
         table.insert(elements, { label = carTable[i].CarLabel, value = carTable[i].CarID })
@@ -129,7 +129,7 @@ AddEventHandler("Natural:Client:StaffManagement:GiveVIPMenu", function(target, c
     }, function(data, menu)
         ESX.Game.SpawnVehicle(data.current.value, GetEntityCoords(PlayerPedId()), GetEntityHeading(PlayerPedId()),
             function(vehicle)
-                TriggerServerEvent("Natural:Server:StaffManagement:GiveVIP", target, ESX.Game.GetVehicleProperties(vehicle),
+                TriggerServerEvent("SA:Server:StaffManagement:GiveVIP", target, ESX.Game.GetVehicleProperties(vehicle),
                     data.current.label)
                 ESX.Game.DeleteVehicle(vehicle)
             end, true)
@@ -140,7 +140,7 @@ AddEventHandler("Natural:Client:StaffManagement:GiveVIPMenu", function(target, c
 end)
 
 RegisterClientCallback {
-    eventName = 'Natural:Client:StaffManagement:RequestScreenshot',
+    eventName = 'SA:Client:StaffManagement:RequestScreenshot',
     eventCallback = function(...)
         ScreenPlayer = nil
         local promise = promise.new()
@@ -155,7 +155,7 @@ RegisterClientCallback {
     end
 }
 
-RegisterNetEvent("Natural:Client:StaffManagement:Visuals", function()
+RegisterNetEvent("SA:Client:StaffManagement:Visuals", function()
     isNamesOn = not isNamesOn
     Citizen.CreateThread(function()
         while isNamesOn do
@@ -172,7 +172,7 @@ RegisterNetEvent("Natural:Client:StaffManagement:Visuals", function()
     end)
 end)
 
-RegisterNetEvent("Natural:Client:StaffManagement:UpdatePlayerList", function(tLines)
+RegisterNetEvent("SA:Client:StaffManagement:UpdatePlayerList", function(tLines)
     playerList = tLines
 end)
 

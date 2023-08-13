@@ -36,13 +36,13 @@ function createESXPlayer(identifier, playerId, data)
 		end
 	end
 	if not discordId then
-		DropPlayer(playerId, 'Não foi encontrado nenhum identificador do Discord. Verifica se tens a tua conta de Discord ligada ao FiveM e tenta novamente.')
+		DropPlayer(playerId, 'Ocorreu um erro ao carregar a personagem. Entra em contacto com a equipa.')
 	end
 
 	local uId = MySQL.scalar.await('SELECT `ID` FROM `discord_whitelist` WHERE `DiscordID` = ?', { discordId })
 
 	if not uId then
-		DropPlayer(playerId, 'Não estás na whitelist do servidor. Verifica se tens a tua conta de Discord ligada ao FiveM e tenta novamente.')
+		DropPlayer(playerId, 'Ocorreu um erro ao carregar a personagem. Entra em contacto com a equipa.')
 	end
 
 	MySQL.prepare(newPlayer,

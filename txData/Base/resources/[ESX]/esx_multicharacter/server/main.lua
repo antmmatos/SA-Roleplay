@@ -8,8 +8,8 @@ do
 
 	if connectionString == '' then
 		error(
-		connectionString ..
-		'\n^1Unable to start Multicharacter - unable to determine database from mysql_connection_string^0', 0)
+			connectionString ..
+			'\n^1Unable to start Multicharacter - unable to determine database from mysql_connection_string^0', 0)
 	elseif connectionString:find('mysql://') then
 		connectionString = connectionString:sub(9, -1)
 		DATABASE = connectionString:sub(connectionString:find('/') + 1, -1):gsub('[%?]+[%w%p]*$', '')
@@ -64,11 +64,11 @@ local function SetupCharacters(source)
 	ESX.Players[identifier] = true
 
 	local slots = MySQL.scalar.await('SELECT slots FROM multicharacter_slots WHERE identifier = ?', { identifier }) or
-	SLOTS
+		SLOTS
 	identifier = PREFIX .. '%:' .. identifier
 
 	local result = MySQL.query.await(
-	'SELECT identifier, accounts, job, job_grade, firstname, lastname, dateofbirth, sex, skin, disabled FROM users WHERE identifier LIKE ? LIMIT ?',
+		'SELECT identifier, accounts, job, job_grade, firstname, lastname, dateofbirth, sex, skin, disabled FROM users WHERE identifier LIKE ? LIMIT ?',
 		{ identifier, slots })
 	local characters
 
@@ -112,24 +112,47 @@ AddEventHandler('playerConnecting', function(_, _, deferrals)
 	local identifier = GetIdentifier(source)
 	if oneSyncState == "off" or oneSyncState == "legacy" then
 		return deferrals.done(('[ESX] ESX Requires Onesync Infinity to work. This server currently has Onesync set to: %s')
-		:format(oneSyncState))
+			:format(oneSyncState))
 	end
 
 	if not databaseFound then
 		deferrals.done(
-		'[ESX] Cannot Find the servers mysql_connection_string. Please make sure it is correctly configured in your server.cfg')
+			'[ESX] Cannot Find the servers mysql_connection_string. Please make sure it is correctly configured in your server.cfg')
 	end
 
 	if not databaseConnected then
 		deferrals.done(
-		'[ESX] OxMySQL Was Unable To Connect to your database. Please make sure it is turned on and correctly configured in your server.cfg')
+			'[ESX] OxMySQL Was Unable To Connect to your database. Please make sure it is turned on and correctly configured in your server.cfg')
 	end
 
 	if identifier then
 		if ESX.Players[identifier] then
 			deferrals.done(('[ESX Multicharacter] A player is already connected to the server with this identifier.\nYour identifier: %s:%s')
-			:format(PRIMARY_IDENTIFIER, identifier))
+				:format(PRIMARY_IDENTIFIER, identifier))
 		else
+			local discordId
+			local identifiers = GetPlayerIdentifiers(source)
+			for _, v in pairs(identifiers) do
+				if string.match(v, 'discord:') then
+					discordId = string.gsub(v, 'discord:', '')
+					break
+				end
+			end
+			if not discordId then
+				deferrals.done('Não foi encontrado nenhum identificador do Discord. Verifica se tens a tua conta de Discord ligada ao FiveM e tenta novamente.')
+			end
+
+			local uId = MySQL.scalar.await('SELECT `ID` FROM `discord_whitelist` WHERE `DiscordID` = ?', { discordId })
+
+			if not uId then
+				deferrals.done('Não estás na whitelist do servidor. Verifica se tens a tua conta de Discord ligada ao FiveM e tenta novamente.')
+			end
+
+			if ESX.UniqueId[uId] then
+				deferrals.done('Já existe um jogador no servidor com o teu ID. Se achas que isto é um erro, abre ticket no Discord.')
+			end
+			
+			ESX.UniqueId[uId] = true
 			deferrals.done()
 		end
 	else
@@ -163,10 +186,10 @@ end
 MySQL.ready(function()
 	local length = 42 + #PREFIX
 	local DB_COLUMNS = MySQL.query.await(
-	('SELECT TABLE_NAME, COLUMN_NAME, CHARACTER_MAXIMUM_LENGTH FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = "%s" AND DATA_TYPE = "varchar" AND COLUMN_NAME IN (?)')
-	:format(DATABASE, length), {
-		{ 'identifier', 'owner' }
-	})
+		('SELECT TABLE_NAME, COLUMN_NAME, CHARACTER_MAXIMUM_LENGTH FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = "%s" AND DATA_TYPE = "varchar" AND COLUMN_NAME IN (?)')
+		:format(DATABASE, length), {
+			{ 'identifier', 'owner' }
+		})
 
 	if DB_COLUMNS then
 		local columns = {}

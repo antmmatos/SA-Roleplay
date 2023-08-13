@@ -1,5 +1,6 @@
 ESX = {}
 ESX.Players = {}
+ESX.UniqueId = {}
 ESX.Jobs = {}
 ESX.Items = {}
 Core = {}
