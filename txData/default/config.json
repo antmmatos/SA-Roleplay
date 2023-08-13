@@ -33,8 +33,8 @@
   },
   "fxRunner": {
     "autostart": true,
-    "serverDataPath": "C:/Users/admin/Desktop/Server/txData/Base/",
-    "cfgPath": "C:/Users/admin/Desktop/Server/txData/Base/server.cfg",
+    "serverDataPath": "C:/Users/admin/Documents/GitHub/SARP/txData/Base/",
+    "cfgPath": "C:/Users/admin/Documents/GitHub/SARP/txData/Base/server.cfg",
     "onesync": "on"
   }
 }

@@ -308,11 +308,14 @@ AddEventHandler('esx:playerLoaded', function(playerData, isNew, skin)
 			local playerPed = PlayerPedId()
 			SetPedAoBlobRendering(playerPed, true)
 			ResetEntityAlpha(playerPed)
-			TriggerEvent('esx_skin:openSaveableMenu', function()
-				finished = true
-			end, function()
+			TriggerEvent("VexCreator:loadCreator", function ()
 				finished = true
 			end)
+			--TriggerEvent('esx_skin:openSaveableMenu', function()
+			--	finished = true
+			--end, function()
+			--	finished = true
+			--end)
 		end)
 		repeat Wait(200) until finished
 	end

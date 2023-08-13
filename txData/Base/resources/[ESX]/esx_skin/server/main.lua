@@ -30,5 +30,5 @@ ESX.RegisterServerCallback('esx_skin:getPlayerSkin', function(source, cb)
 end)
 
 ESX.RegisterCommand('skin', 'admin', function(xPlayer)
-	xPlayer.triggerEvent('esx_skin:openSaveableMenu')
+	xPlayer.triggerEvent('VexCreator:loadCreator')
 end, false, { help = TranslateCap('skin') })

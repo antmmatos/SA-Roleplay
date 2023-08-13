@@ -1,0 +1,1 @@
+SetDefaultVehicleNumberPlateTextPattern(-1, "1AAA111")

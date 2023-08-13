@@ -1,10 +1,9 @@
 SetMapName('San Andreas')
 
-local oneSyncState = GetConvar('onesync', 'off')
 local newPlayer =
-'INSERT INTO `users` SET `accounts` = ?, `identifier` = ?, `group` = ?, `firstname` = ?, `lastname` = ?, `dateofbirth` = ?, `sex` = ?, `height` = ?'
+'INSERT INTO `users` SET `uId` = ?, `accounts` = ?, `identifier` = ?, `group` = ?, `firstname` = ?, `lastname` = ?, `dateofbirth` = ?, `sex` = ?, `height` = ?'
 local loadPlayer =
-'SELECT `accounts`, `job`, `job_grade`, `group`, `position`, `inventory`, `skin`, `loadout`, `metadata`, `firstname`, `lastname`, `dateofbirth`, `sex`, `height` FROM `users` WHERE identifier = ?'
+'SELECT `accounts`, `job`, `job_grade`, `group`, `position`, `inventory`, `skin`, `metadata`, `firstname`, `lastname`, `dateofbirth`, `sex`, `height` FROM `users` WHERE identifier = ?'
 
 AddEventHandler('esx:onPlayerJoined', function(src, char, data)
 	while not next(ESX.Jobs) do
@@ -21,28 +20,6 @@ AddEventHandler('esx:onPlayerJoined', function(src, char, data)
 	end
 end)
 
-function onPlayerJoined(playerId)
-	local identifier = ESX.GetIdentifier(playerId)
-	if identifier then
-		if ESX.GetPlayerFromIdentifier(identifier) then
-			DropPlayer(playerId,
-				('there was an error loading your character!\nError code: identifier-active-ingame\n\nThis error is caused by a player on this server who has the same identifier as you have. Make sure you are not playing on the same Rockstar account.\n\nYour Rockstar identifier: %s')
-				:format(
-					identifier))
-		else
-			local result = MySQL.scalar.await('SELECT 1 FROM users WHERE identifier = ?', { identifier })
-			if result then
-				loadESXPlayer(identifier, playerId, false)
-			else
-				createESXPlayer(identifier, playerId)
-			end
-		end
-	else
-		DropPlayer(playerId,
-			'there was an error loading your character!\nError code: identifier-missing-ingame\n\nThe cause of this error is not known, your identifier could not be found. Please come back later or report this problem to the server administration team.')
-	end
-end
-
 function createESXPlayer(identifier, playerId, data)
 	local accounts = {}
 
@@ -50,9 +27,26 @@ function createESXPlayer(identifier, playerId, data)
 		accounts[account] = money
 	end
 
+	local identifiers = GetPlayerIdentifiers(playerId)
+	local discordId
+	for _, v in pairs(identifiers) do
+		if string.match(v, 'discord:') then
+			discordId = string.gsub(v, 'discord:', '')
+			break
+		end
+	end
+	if not discordId then
+		DropPlayer(playerId, 'Não foi encontrado nenhum identificador do Discord. Verifica se tens a tua conta de Discord ligada ao FiveM e tenta novamente.')
+	end
+
+	local uId = MySQL.scalar.await('SELECT `ID` FROM `discord_whitelist` WHERE `DiscordID` = ?', { discordId })
+
+	if not uId then
+		DropPlayer(playerId, 'Não estás na whitelist do servidor. Verifica se tens a tua conta de Discord ligada ao FiveM e tenta novamente.')
+	end
 
 	MySQL.prepare(newPlayer,
-		{ json.encode(accounts), identifier, "user", data.firstname, data.lastname, data.dateofbirth, data.sex,
+		{ uId, json.encode(accounts), identifier, "user", data.firstname, data.lastname, data.dateofbirth, data.sex,
 			data.height }, function()
 			loadESXPlayer(identifier, playerId, true)
 		end)
@@ -63,7 +57,6 @@ function loadESXPlayer(identifier, playerId, isNew)
 		accounts = {},
 		inventory = {},
 		job = {},
-		loadout = {},
 		playerName = GetPlayerName(playerId),
 		weight = 0,
 		metadata = {}
@@ -132,12 +125,7 @@ function loadESXPlayer(identifier, playerId, isNew)
 
 	-- Group
 	if result.group then
-		if result.group == "superadmin" then
-			userData.group = "admin"
-			print("[^3WARNING^7] ^5Superadmin^7 detected, setting group to ^5admin^7")
-		else
 			userData.group = result.group
-		end
 	else
 		userData.group = 'user'
 	end
@@ -178,7 +166,7 @@ function loadESXPlayer(identifier, playerId, isNew)
 	end
 
 	local xPlayer = CreateExtendedPlayer(playerId, identifier, userData.group, userData.accounts, userData.inventory,
-		userData.weight, userData.job, userData.loadout, userData.playerName, userData.coords, userData.metadata)
+		userData.weight, userData.job, userData.playerName, userData.coords, userData.metadata)
 	ESX.Players[playerId] = xPlayer
 	Core.playersByIdentifier[identifier] = xPlayer
 
@@ -205,7 +193,6 @@ function loadESXPlayer(identifier, playerId, isNew)
 			identifier = xPlayer.getIdentifier(),
 			inventory = xPlayer.getInventory(),
 			job = xPlayer.getJob(),
-			loadout = xPlayer.getLoadout(),
 			maxWeight = xPlayer.getMaxWeight(),
 			money = xPlayer.getMoney(),
 			sex = xPlayer.get("sex") or "m",
@@ -278,7 +265,6 @@ ESX.RegisterServerCallback('esx:getPlayerData', function(source, cb)
 		accounts = xPlayer.getAccounts(),
 		inventory = xPlayer.getInventory(),
 		job = xPlayer.getJob(),
-		loadout = xPlayer.getLoadout(),
 		money = xPlayer.getMoney(),
 		position = xPlayer.getCoords(true),
 		metadata = xPlayer.getMeta()
@@ -297,7 +283,6 @@ ESX.RegisterServerCallback('esx:getOtherPlayerData', function(_, cb, target)
 		accounts = xPlayer.getAccounts(),
 		inventory = xPlayer.getInventory(),
 		job = xPlayer.getJob(),
-		loadout = xPlayer.getLoadout(),
 		money = xPlayer.getMoney(),
 		position = xPlayer.getCoords(true),
 		metadata = xPlayer.getMeta()

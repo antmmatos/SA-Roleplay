@@ -201,41 +201,41 @@ local function routeMessage(source, author, message, mode, fromConsole)
     end
 end
 
-AddEventHandler('_chat:messageEntered', function(author, color, message, mode)
-    if not message or not author then
-        return
-    end
+-- AddEventHandler('_chat:messageEntered', function(author, color, message, mode)
+--     if not message or not author then
+--         return
+--     end
 
-    local source = source
+--     local source = source
 
-    routeMessage(source, author, message, mode)
-end)
+--     routeMessage(source, author, message, mode)
+-- end)
 
 AddEventHandler('__cfx_internal:commandFallback', function(command)
     local name = GetPlayerName(source)
 
     -- route the message as if it were a /command
-    routeMessage(source, name, '/' .. command, nil, true)
+    TriggerEvent('chatMessage', source, name, '/' .. command)
 
     CancelEvent()
 end)
 
 -- player join messages
-AddEventHandler('playerJoining', function()
-    if GetConvarInt('chat_showJoins', 1) == 0 then
-        return
-    end
+-- AddEventHandler('playerJoining', function()
+--     if GetConvarInt('chat_showJoins', 1) == 0 then
+--         return
+--     end
 
-    TriggerClientEvent('chatMessage', -1, '', { 255, 255, 255 }, '^2* ' .. GetPlayerName(source) .. ' joined.')
-end)
+--     TriggerClientEvent('chatMessage', -1, '', { 255, 255, 255 }, '^2* ' .. GetPlayerName(source) .. ' joined.')
+-- end)
 
-AddEventHandler('playerDropped', function(reason)
-    if GetConvarInt('chat_showQuits', 1) == 0 then
-        return
-    end
+-- AddEventHandler('playerDropped', function(reason)
+--     if GetConvarInt('chat_showQuits', 1) == 0 then
+--         return
+--     end
 
-    TriggerClientEvent('chatMessage', -1, '', { 255, 255, 255 }, '^2* ' .. GetPlayerName(source) ..' left (' .. reason .. ')')
-end)
+--     TriggerClientEvent('chatMessage', -1, '', { 255, 255, 255 }, '^2* ' .. GetPlayerName(source) ..' left (' .. reason .. ')')
+-- end)
 
 RegisterCommand('say', function(source, args, rawCommand)
     routeMessage(source, (source == 0) and 'console' or GetPlayerName(source), rawCommand:sub(5), nil, true)

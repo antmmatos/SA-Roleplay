@@ -1,7 +1,7 @@
 local GetPlayerPed = GetPlayerPed
 local GetEntityCoords = GetEntityCoords
 
-function CreateExtendedPlayer(playerId, identifier, group, accounts, inventory, weight, job, loadout, name, coords,
+function CreateExtendedPlayer(playerId, identifier, group, accounts, inventory, weight, job, name, coords,
 							  metadata)
 	local targetOverrides = Config.PlayerFunctionOverride and Core.PlayerFunctionOverrides
 	[Config.PlayerFunctionOverride] or {}
@@ -14,7 +14,6 @@ function CreateExtendedPlayer(playerId, identifier, group, accounts, inventory, 
 	self.identifier = identifier
 	self.inventory = inventory
 	self.job = job
-	self.loadout = loadout
 	self.name = name
 	self.playerId = playerId
 	self.source = playerId
@@ -150,34 +149,6 @@ function CreateExtendedPlayer(playerId, identifier, group, accounts, inventory, 
 
 	function self.getJob()
 		return self.job
-	end
-
-	function self.getLoadout(minimal)
-		if not minimal then
-			return self.loadout
-		end
-		local minimalLoadout = {}
-
-		for _, v in ipairs(self.loadout) do
-			minimalLoadout[v.name] = { ammo = v.ammo }
-			if v.tintIndex > 0 then minimalLoadout[v.name].tintIndex = v.tintIndex end
-
-			if #v.components > 0 then
-				local components = {}
-
-				for _, component in ipairs(v.components) do
-					if component ~= 'clip_default' then
-						components[#components + 1] = component
-					end
-				end
-
-				if #components > 0 then
-					minimalLoadout[v.name].components = components
-				end
-			end
-		end
-
-		return minimalLoadout
 	end
 
 	function self.getName()
@@ -398,168 +369,6 @@ function CreateExtendedPlayer(playerId, identifier, group, accounts, inventory, 
 		end
 	end
 
-	function self.addWeapon(weaponName, ammo)
-		if not self.hasWeapon(weaponName) then
-			local weaponLabel = ESX.GetWeaponLabel(weaponName)
-
-			table.insert(self.loadout, {
-				name = weaponName,
-				ammo = ammo,
-				label = weaponLabel,
-				components = {},
-				tintIndex = 0
-			})
-
-			GiveWeaponToPed(GetPlayerPed(self.source), joaat(weaponName), ammo, false, false)
-			self.triggerEvent('esx:addInventoryItem', weaponLabel, false, true)
-		end
-	end
-
-	function self.addWeaponComponent(weaponName, weaponComponent)
-		local loadoutNum, weapon = self.getWeapon(weaponName)
-
-		if weapon then
-			local component = ESX.GetWeaponComponent(weaponName, weaponComponent)
-
-			if component then
-				if not self.hasWeaponComponent(weaponName, weaponComponent) then
-					self.loadout[loadoutNum].components[#self.loadout[loadoutNum].components + 1] = weaponComponent
-					local componentHash = ESX.GetWeaponComponent(weaponName, weaponComponent).hash
-					GiveWeaponComponentToPed(GetPlayerPed(self.source), joaat(weaponName), componentHash)
-					self.triggerEvent('esx:addInventoryItem', component.label, false, true)
-				end
-			end
-		end
-	end
-
-	function self.addWeaponAmmo(weaponName, ammoCount)
-		local _, weapon = self.getWeapon(weaponName)
-
-		if weapon then
-			weapon.ammo = weapon.ammo + ammoCount
-			SetPedAmmo(GetPlayerPed(self.source), joaat(weaponName), weapon.ammo)
-		end
-	end
-
-	function self.updateWeaponAmmo(weaponName, ammoCount)
-		local _, weapon = self.getWeapon(weaponName)
-
-		if weapon then
-			weapon.ammo = ammoCount
-		end
-	end
-
-	function self.setWeaponTint(weaponName, weaponTintIndex)
-		local loadoutNum, weapon = self.getWeapon(weaponName)
-
-		if weapon then
-			local _, weaponObject = ESX.GetWeapon(weaponName)
-
-			if weaponObject.tints and weaponObject.tints[weaponTintIndex] then
-				self.loadout[loadoutNum].tintIndex = weaponTintIndex
-				self.triggerEvent('esx:setWeaponTint', weaponName, weaponTintIndex)
-				self.triggerEvent('esx:addInventoryItem', weaponObject.tints[weaponTintIndex], false, true)
-			end
-		end
-	end
-
-	function self.getWeaponTint(weaponName)
-		local _, weapon = self.getWeapon(weaponName)
-
-		if weapon then
-			return weapon.tintIndex
-		end
-
-		return 0
-	end
-
-	function self.removeWeapon(weaponName)
-		local weaponLabel, playerPed = nil, GetPlayerPed(self.source)
-
-		if not playerPed then
-			return print("[^1ERROR^7] xPlayer.removeWeapon ^5invalid^7 player ped!")
-		end
-
-		for k, v in ipairs(self.loadout) do
-			if v.name == weaponName then
-				weaponLabel = v.label
-
-				for _, v2 in ipairs(v.components) do
-					self.removeWeaponComponent(weaponName, v2)
-				end
-
-				local weaponHash = joaat(v.name)
-
-				RemoveWeaponFromPed(playerPed, weaponHash)
-				SetPedAmmo(playerPed, weaponHash, 0)
-
-				table.remove(self.loadout, k)
-				break
-			end
-		end
-
-		if weaponLabel then
-			self.triggerEvent('esx:removeInventoryItem', weaponLabel, false, true)
-		end
-	end
-
-	function self.removeWeaponComponent(weaponName, weaponComponent)
-		local loadoutNum, weapon = self.getWeapon(weaponName)
-
-		if weapon then
-			local component = ESX.GetWeaponComponent(weaponName, weaponComponent)
-
-			if component then
-				if self.hasWeaponComponent(weaponName, weaponComponent) then
-					for k, v in ipairs(self.loadout[loadoutNum].components) do
-						if v == weaponComponent then
-							table.remove(self.loadout[loadoutNum].components, k)
-							break
-						end
-					end
-
-					self.triggerEvent('esx:removeWeaponComponent', weaponName, weaponComponent)
-					self.triggerEvent('esx:removeInventoryItem', component.label, false, true)
-				end
-			end
-		end
-	end
-
-	function self.removeWeaponAmmo(weaponName, ammoCount)
-		local _, weapon = self.getWeapon(weaponName)
-
-		if weapon then
-			weapon.ammo = weapon.ammo - ammoCount
-			self.triggerEvent('esx:setWeaponAmmo', weaponName, weapon.ammo)
-		end
-	end
-
-	function self.hasWeaponComponent(weaponName, weaponComponent)
-		local _, weapon = self.getWeapon(weaponName)
-
-		if weapon then
-			for _, v in ipairs(weapon.components) do
-				if v == weaponComponent then
-					return true
-				end
-			end
-
-			return false
-		else
-			return false
-		end
-	end
-
-	function self.hasWeapon(weaponName)
-		for _, v in ipairs(self.loadout) do
-			if v.name == weaponName then
-				return true
-			end
-		end
-
-		return false
-	end
-
 	function self.hasItem(item)
 		for _, v in ipairs(self.inventory) do
 			if (v.name == item) and (v.count >= 1) then
@@ -570,25 +379,8 @@ function CreateExtendedPlayer(playerId, identifier, group, accounts, inventory, 
 		return false
 	end
 
-	function self.getWeapon(weaponName)
-		for k, v in ipairs(self.loadout) do
-			if v.name == weaponName then
-				return k, v
-			end
-		end
-	end
-
 	function self.showNotification(msg, type, length)
 		self.triggerEvent('esx:showNotification', msg, type, length)
-	end
-
-	function self.showAdvancedNotification(sender, subject, msg, textureDict, iconType, flash, saveToBrief, hudColorIndex)
-		self.triggerEvent('esx:showAdvancedNotification', sender, subject, msg, textureDict, iconType, flash, saveToBrief,
-			hudColorIndex)
-	end
-
-	function self.showHelpNotification(msg, thisFrame, beep, duration)
-		self.triggerEvent('esx:showHelpNotification', msg, thisFrame, beep, duration)
 	end
 
 	function self.getMeta(index, subIndex)

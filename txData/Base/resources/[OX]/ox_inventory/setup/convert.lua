@@ -79,7 +79,7 @@ local function ConvertESX()
 		return warn('Data is already being converted, please wait..')
 	end
 
-	local users = MySQL.query.await('SELECT identifier, inventory, loadout, accounts FROM users')
+	local users = MySQL.query.await('SELECT identifier, inventory, accounts FROM users')
 
 	if not users then return end
 
@@ -95,26 +95,12 @@ local function ConvertESX()
 		local inventory, slot = {}, 0
 		local items = users[i].inventory and json.decode(users[i].inventory) or {}
 		local accounts = users[i].accounts and json.decode(users[i].accounts) or {}
-		local loadout = users[i].loadout and json.decode(users[i].loadout) or {}
 
 		for k, v in pairs(accounts) do
 			if type(v) == 'table' then break end
 			if server.accounts[k] and Items(k) and v > 0 then
 				slot += 1
 				inventory[slot] = {slot=slot, name=k, count=v}
-			end
-		end
-
-		for k in pairs(loadout) do
-			local item = Items(k)
-			if item then
-				slot += 1
-				inventory[slot] = {slot=slot, name=k, count=1, metadata = {durability=100}}
-				if item.ammoname then
-					inventory[slot].metadata.ammo = 0
-					inventory[slot].metadata.components = {}
-					inventory[slot].metadata.serial = GenerateSerial()
-				end
 			end
 		end
 

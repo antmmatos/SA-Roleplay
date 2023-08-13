@@ -335,46 +335,46 @@ function spawnPlayer(spawnIdx, cb)
 end
 
 -- automatic spawning monitor thread, too
-local respawnForced
-local diedAt
-
-Citizen.CreateThread(function()
-    -- main loop thing
-    while true do
-        Citizen.Wait(50)
-
-        local playerPed = PlayerPedId()
-
-        if playerPed and playerPed ~= -1 then
-            -- check if we want to autospawn
-            if autoSpawnEnabled then
-                if NetworkIsPlayerActive(PlayerId()) then
-                    if (diedAt and (math.abs(GetTimeDifference(GetGameTimer(), diedAt)) > 2000)) or respawnForced then
-                        if autoSpawnCallback then
-                            autoSpawnCallback()
-                        else
-                            spawnPlayer()
-                        end
-
-                        respawnForced = false
-                    end
-                end
-            end
-
-            if IsEntityDead(playerPed) then
-                if not diedAt then
-                    diedAt = GetGameTimer()
-                end
-            else
-                diedAt = nil
-            end
-        end
-    end
-end)
+--local respawnForced
+--local diedAt
+--
+--Citizen.CreateThread(function()
+--    -- main loop thing
+--    while true do
+--        Citizen.Wait(50)
+--
+--        local playerPed = PlayerPedId()
+--
+--        if playerPed and playerPed ~= -1 then
+--            -- check if we want to autospawn
+--            if autoSpawnEnabled then
+--                if NetworkIsPlayerActive(PlayerId()) then
+--                    if (diedAt and (math.abs(GetTimeDifference(GetGameTimer(), diedAt)) > 2000)) or respawnForced then
+--                        if autoSpawnCallback then
+--                            autoSpawnCallback()
+--                        else
+--                            spawnPlayer()
+--                        end
+--
+--                        respawnForced = false
+--                    end
+--                end
+--            end
+--
+--            if IsEntityDead(playerPed) then
+--                if not diedAt then
+--                    diedAt = GetGameTimer()
+--                end
+--            else
+--                diedAt = nil
+--            end
+--        end
+--    end
+--end)
 
 function forceRespawn()
     spawnLock = false
-    respawnForced = true
+    --respawnForced = true
 end
 
 exports('spawnPlayer', spawnPlayer)

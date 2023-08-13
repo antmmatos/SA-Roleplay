@@ -62,7 +62,6 @@ Locales["it"] = {
 	['command_clear'] = 'Pulisci la chat testuale',
 	['command_clearall'] = 'Pulisci la chat testuale per tutti i giocatori',
 	['command_clearinventory'] = 'Rimuovi tutti gli oggetti dall\' inventario del giocatore',
-	['command_clearloadout'] = 'Rimuovi tutte le armi dal loadout del giocatore',
 	['command_freeze'] = 'Blocca un giocatore',
 	['command_unfreeze'] = 'Sblocca un giocatore',
 	['command_giveaccountmoney'] = 'Dai soldi a un\' account specifico',

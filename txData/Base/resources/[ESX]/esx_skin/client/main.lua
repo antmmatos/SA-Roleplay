@@ -252,8 +252,9 @@ AddEventHandler('esx_skin:playerRegistered', function()
         if firstSpawn then
             ESX.TriggerServerCallback('esx_skin:getPlayerSkin', function(skin)
                 if skin == nil then
-                    TriggerEvent('skinchanger:loadSkin', { sex = 0 }, OpenSaveableMenu)
+                    TriggerEvent('skinchanger:loadSkin', { sex = 0 })
                     Wait(100)
+                    TriggerEvent("VexCreator:loadCreator")
                 else
                     TriggerEvent('skinchanger:loadSkin', skin)
                     Wait(100)
