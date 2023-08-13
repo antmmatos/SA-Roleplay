@@ -50,7 +50,7 @@ RegisterCommand("bring", function(source, args, raw)
             if xTarget then
                 local targetCoords = xTarget.getCoords()
                 local playerCoords = xPlayer.getCoords()
-                savedCoords[tonumber(args[1])] = targetCoords
+                saveCoords[tonumber(args[1])] = targetCoords
                 xTarget.setCoords(playerCoords)
                 TriggerEvent("SA:Server:StaffManagement:LogSystem", raw, source)
             end
@@ -102,7 +102,7 @@ RegisterCommand("goback", function(source, args, raw)
 end, false)
 
 RegisterCommand("dv", function(source, args, raw)
-    if isAllowedTo(source, "suporte") then
+    if isAllowedTo(source, "suporte")   then
         TriggerEvent("SA:Server:StaffManagement:LogSystem", raw, source)
         local vehicle = GetVehiclePedIsIn(GetPlayerPed(source), false)
         if vehicle ~= 0 then
