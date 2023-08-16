@@ -39,6 +39,7 @@ function ESX.Progressbar(message, length, Options)
 end
 
 function ESX.ShowNotification(message, type, length)
+    print(message)
     print("[^1ERROR^7] ^5ESX Notify^7 is Missing!")
 end
 

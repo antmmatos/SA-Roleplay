@@ -12,47 +12,48 @@ AddEventHandler('esx:onPlayerJoined', function(src, char, data)
 
 	if not ESX.Players[src] then
 		local identifier = char .. ':' .. ESX.GetIdentifier(src)
+		
+		local identifiers = GetPlayerIdentifiers(src)
+		local discordId
+		for _, v in pairs(identifiers) do
+			if string.match(v, 'discord:') then
+				discordId = string.gsub(v, 'discord:', '')
+				break
+			end
+		end
+		if not discordId then
+			DropPlayer(src, 'Ocorreu um erro ao carregar a personagem. Entra em contacto com a equipa.')
+		end
+
+		local uId = MySQL.scalar.await('SELECT `ID` FROM `discord_whitelist` WHERE `DiscordID` = ?', { discordId })
+
+		if not uId then
+			DropPlayer(src, 'Ocorreu um erro ao carregar a personagem. Entra em contacto com a equipa.')
+		end
+
 		if data then
-			createESXPlayer(identifier, src, data)
+			createESXPlayer(identifier, src, data, uId)
 		else
-			loadESXPlayer(identifier, src, false)
+			loadESXPlayer(identifier, src, false, uId)
 		end
 	end
 end)
 
-function createESXPlayer(identifier, playerId, data)
+function createESXPlayer(identifier, playerId, data, uId)
 	local accounts = {}
 
 	for account, money in pairs(Config.StartingAccountMoney) do
 		accounts[account] = money
 	end
 
-	local identifiers = GetPlayerIdentifiers(playerId)
-	local discordId
-	for _, v in pairs(identifiers) do
-		if string.match(v, 'discord:') then
-			discordId = string.gsub(v, 'discord:', '')
-			break
-		end
-	end
-	if not discordId then
-		DropPlayer(playerId, 'Ocorreu um erro ao carregar a personagem. Entra em contacto com a equipa.')
-	end
-
-	local uId = MySQL.scalar.await('SELECT `ID` FROM `discord_whitelist` WHERE `DiscordID` = ?', { discordId })
-
-	if not uId then
-		DropPlayer(playerId, 'Ocorreu um erro ao carregar a personagem. Entra em contacto com a equipa.')
-	end
-
 	MySQL.prepare(newPlayer,
 		{ uId, json.encode(accounts), identifier, "user", data.firstname, data.lastname, data.dateofbirth, data.sex,
 			data.height }, function()
-			loadESXPlayer(identifier, playerId, true)
+			loadESXPlayer(identifier, playerId, true, uId)
 		end)
 end
 
-function loadESXPlayer(identifier, playerId, isNew)
+function loadESXPlayer(identifier, playerId, isNew, uId)
 	local userData = {
 		accounts = {},
 		inventory = {},
@@ -165,7 +166,7 @@ function loadESXPlayer(identifier, playerId, isNew)
 		userData.metadata = metadata
 	end
 
-	local xPlayer = CreateExtendedPlayer(playerId, identifier, userData.group, userData.accounts, userData.inventory,
+	local xPlayer = CreateExtendedPlayer(playerId, uId, identifier, userData.group, userData.accounts, userData.inventory,
 		userData.weight, userData.job, userData.playerName, userData.coords, userData.metadata)
 	ESX.Players[playerId] = xPlayer
 	Core.playersByIdentifier[identifier] = xPlayer
@@ -245,7 +246,6 @@ AddEventHandler('esx:playerLogout', function(playerId, cb)
 	local xPlayer = ESX.GetPlayerFromId(playerId)
 	if xPlayer then
 		TriggerEvent('esx:playerDropped', playerId)
-
 		Core.playersByIdentifier[xPlayer.identifier] = nil
 		Core.SavePlayer(xPlayer, function()
 			ESX.Players[playerId] = nil

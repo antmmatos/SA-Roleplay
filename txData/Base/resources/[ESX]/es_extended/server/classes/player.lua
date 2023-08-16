@@ -1,7 +1,7 @@
 local GetPlayerPed = GetPlayerPed
 local GetEntityCoords = GetEntityCoords
 
-function CreateExtendedPlayer(playerId, identifier, group, accounts, inventory, weight, job, name, coords,
+function CreateExtendedPlayer(playerId, uId, identifier, group, accounts, inventory, weight, job, name, coords,
 							  metadata)
 	local targetOverrides = Config.PlayerFunctionOverride and Core.PlayerFunctionOverrides
 	[Config.PlayerFunctionOverride] or {}
@@ -12,6 +12,7 @@ function CreateExtendedPlayer(playerId, identifier, group, accounts, inventory, 
 	self.coords = coords
 	self.group = group
 	self.identifier = identifier
+	self.uId = uId
 	self.inventory = inventory
 	self.job = job
 	self.name = name
@@ -86,6 +87,10 @@ function CreateExtendedPlayer(playerId, identifier, group, accounts, inventory, 
 
 	function self.getIdentifier()
 		return self.identifier
+	end
+
+	function self.getuId()
+		return self.uId
 	end
 
 	function self.setGroup(newGroup)

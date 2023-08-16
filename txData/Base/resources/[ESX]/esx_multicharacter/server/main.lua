@@ -260,6 +260,8 @@ end)
 
 AddEventHandler('playerDropped', function()
 	awaitingRegistration[source] = nil
+	local xPlayer = ESX.GetPlayerFromId(source)
+	ESX.UniqueId[xPlayer.getuId()] = nil
 	ESX.Players[GetIdentifier(source)] = nil
 end)
 
