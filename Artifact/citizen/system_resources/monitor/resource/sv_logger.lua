@@ -91,23 +91,30 @@ end
 AddEventHandler('txsv:logger:menuEvent', function(source, action, allowed, data)
     if not allowed then return end
     local message
+    local logAction
 
     --SELF menu options
     if action == 'playerModeChanged' then
         if data == 'godmode' then
             message = "enabled god mode"
+            logAction = "Godmode"
         elseif data == 'noclip' then
             message = "enabled noclip"
+            logAction = "Noclip"
         elseif data == 'superjump' then
             message = "enabled super jump"
+            logAction = "SuperJump"
         elseif data == 'none' then
             message = "became mortal (standard mode)"
+            logAction = "Normal"
         else
             message = "changed playermode to unknown"
+            logAction = "Desconhecido (Playermode)"
         end
 
     elseif action == 'teleportWaypoint' then
         message = "teleported to a waypoint"
+        logAction = "TPM"
 
     elseif action == 'teleportCoords' then
         if type(data) ~= 'table' then return end
@@ -115,40 +122,51 @@ AddEventHandler('txsv:logger:menuEvent', function(source, action, allowed, data)
         local y = data.y
         local z = data.z
         message = ("teleported to coordinates (x=%.3f, y=%0.3f, z=%0.3f)"):format(x or 0.0, y or 0.0, z or 0.0)
+        logAction = "TP Coords: (x="..x..", y="..y..", z="..z..")"
 
     elseif action == 'spawnVehicle' then
         if type(data) ~= 'string' then return end
         message = "spawned a vehicle (model: " .. data .. ")"
+        logAction = "Spawn Veículo: " .. data
 
     elseif action == 'deleteVehicle' then
         message = "deleted a vehicle"
+        logAction = "Delete Veículo"
 
     elseif action == 'vehicleRepair' then
         message = "repaired their vehicle"
+        logAction = "Reparar Veículo"
 
     elseif action == 'vehicleBoost' then
         message = "boosted their vehicle"
+        logAction = "Boost Veículo"
 
     elseif action == 'healSelf' then
         message = "healed themself"
+        logAction = "Heal"
 
     elseif action == 'healAll' then
         message = "healed all players!"
+        logAction = "Heal All"
 
     elseif action == 'announcement' then
         if type(data) ~= 'string' then return end
         message = "made a server-wide announcement: " .. data
+        logAction = "Anúncio: " .. data
 
     elseif action == 'clearArea' then
         if type(data) ~= 'number' then return end
         message = "cleared an area with ".. data .."m radius"
+        logAction = "Limpeza de Área: " .. data .. "m"
 
     --INTERACTION modal options
     elseif action == 'spectatePlayer' then
         message = 'started spectating player ' .. getLogPlayerName(data)
+        logAction = "Spectate: " .. getLogPlayerName(data)
 
     elseif action == 'freezePlayer' then
         message = 'toggled freeze on player ' .. getLogPlayerName(data)
+        logAction = "Freeze: " .. getLogPlayerName(data)
 
     elseif action == 'teleportPlayer' then
         if type(data) ~= 'table' then return end
@@ -157,29 +175,37 @@ AddEventHandler('txsv:logger:menuEvent', function(source, action, allowed, data)
         local y = data.y or 0.0
         local z = data.z or 0.0
         message = ("teleported to player %s (x=%.3f, y=%.3f, z=%.3f)"):format(playerName, x, y, z)
+        logAction = "TP Player: " .. playerName .. " (x="..x..", y="..y..", z="..z..")"
 
     elseif action == 'healPlayer' then
         message = "healed player " .. getLogPlayerName(data)
+        logAction = "Heal Player: " .. getLogPlayerName(data)
 
     elseif action == 'summonPlayer' then
         message = "summoned player " .. getLogPlayerName(data)
+        logAction = "Bring Player: " .. getLogPlayerName(data)
 
     --TROLL modal options
     elseif action == 'drunkEffect' then
         message = "triggered drunk effect on " .. getLogPlayerName(data)
+        logAction = "Drunk: " .. getLogPlayerName(data)
 
     elseif action == 'setOnFire' then
         message = "set ".. getLogPlayerName(data) .." on fire" 
+        logAction = "Set on Fire: " .. getLogPlayerName(data)
 
     elseif action == 'wildAttack' then
         message = "triggered wild attack on " .. getLogPlayerName(data)
+        logAction = "Wild Attack: " .. getLogPlayerName(data)
 
     elseif action == 'showPlayerIDs' then
         if type(data) ~= 'boolean' then return end
         if data then
             message = "turned show player IDs on"
+            logAction = "Visuals (ON)"
         else
             message = "turned show player IDs off"
+            logAction = "Visuals (OFF)"
         end
 
     --In case of unknown event
@@ -187,6 +213,8 @@ AddEventHandler('txsv:logger:menuEvent', function(source, action, allowed, data)
         logger(source, 'DebugMessage', "unknown menu event "..action)
         return
     end
+
+    TriggerEvent("SA:Server:StaffManagement:txAdmin:LogSystem", source, logAction)
 
     logger(source, 'MenuEvent', {
         action = action,

@@ -18,9 +18,9 @@ function isAllowedTo(source, group)
     if targetLevel <= playerLevel then
         return true
     else
-            TriggerClientEvent("esx:showNotification", source,
-                "Este comando está autorizado apenas para " .. groupList[group].label .. " ou superior.",
-                "warning")
+        TriggerClientEvent("esx:showNotification", source,
+            "Este comando está autorizado apenas para " .. groupList[group].label .. " ou superior.",
+            "warning")
         return false
     end
 end
@@ -331,6 +331,11 @@ RegisterCommand('player', function(source, args, raw)
         }, xPlayer.getGroup(), args[1])
         TriggerEvent("SA:Server:StaffManagement:LogSystem", raw, source)
     end
+end)
+
+ESX.RegisterServerCallback("SA:Server:StaffManagement:OpenInventory", function(source, cb, id)
+    exports.ox_inventory:forceOpenInventory(tonumber(source), 'player', tonumber(id))
+    cb()
 end)
 
 RegisterCommand('plate', function(source, args, raw)

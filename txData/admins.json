@@ -21,8 +21,7 @@
   {
     "name": "Texugo",
     "master": false,
-    "password_hash": "$2a$11$wIdKwi964GMAjpmcY65BfOyoL/FgT/JsVk09lGpPiaC0//WtK4Quy",
-    "password_temporary": true,
+    "password_hash": "$2a$11$GGxULcUQemKLPRUWmtMIyuYRpATRIgxGIPDZuWRWftOnGhGy8Bm52",
     "providers": {
       "discord": {
         "id": "942409225517273098",

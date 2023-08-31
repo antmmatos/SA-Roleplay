@@ -1,4 +1,3 @@
-local isLinesOn = false
 local isNamesOn = false
 local playerList = {}
 
@@ -62,12 +61,13 @@ AddEventHandler("SA:Client:StaffManagement:PlayerMenu", function(playerData, gro
     table.insert(elements, { label = "Open inventory", value = "openinventory" })
     ESX.UI.Menu.Open("default", GetCurrentResourceName(), "PlayerMenu", {
         title = "Player Menu",
-        align = "top-left",
+        align = "top-right",
         elements = elements
     }, function(data, menu)
         if data.current.value == "openinventory" then
-            ExecuteCommand("openinv " .. id)
-            menu.close()
+            ESX.TriggerServerCallback("SA:Server:StaffManagement:OpenInventory", function ()
+                menu.close()
+            end, id)
         end
     end, function(data, menu)
         menu.close()

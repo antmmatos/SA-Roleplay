@@ -1,5 +1,4 @@
 Citizen.CreateThread(function()
-    local ped
     local id
     while true do
         id = PlayerId()

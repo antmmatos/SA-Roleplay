@@ -12,7 +12,7 @@ sv_licenseKey "cfxk_4aGvIGxURjRnhUegexjW_1SuQi"
 sv_hostname "Server | ESX Legacy Server"
 sets sv_projectName "Server | [ESX Legacy]"
 sets sv_projectDesc "The official recipe of the most popular FiveM RP framework, containing Jobs, Housing, Vehicles & more!"
-set mysql_connection_string "mysql://root@localhost/Base?charset=utf8mb4"
+set mysql_connection_string "mysql://root:1589@localhost/Base?charset=utf8mb4"
 load_server_icon esxLogo.png
 sv_maxclients 10
 
@@ -33,6 +33,7 @@ setr voice_useNativeAudio true
 setr voice_useSendingRangeOnly true
 set inventory:versioncheck false
 set txAdmin-menuPtfxDisable true
+set sv_enforceGameBuild 2944
 
 # Default & Standalone Resources
 # ------------------------------

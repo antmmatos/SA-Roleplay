@@ -1,3 +1,3 @@
 @echo off
-"C:\Users\afons\OneDrive\Documentos\GitHub\SA-Roleplay\Artifact\FXServer.exe" +set serverProfile "default"
+"C:\Users\admin\Documents\GitHub\SARP\Artifact\FXServer.exe" +set serverProfile "default"
 pause

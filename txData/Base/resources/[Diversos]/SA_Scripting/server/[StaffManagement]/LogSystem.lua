@@ -2,15 +2,14 @@ AddEventHandler("SA:Server:StaffManagement:LogSystem", function(commandExecuted,
     if playerId == 0 then return end
     local log = "**Info:**\n\tComando: " .. commandExecuted
     exports["SA_Scripting"]:LogToDiscord(playerId,
-        "https://discord.com/api/webhooks/1107320380894494750/PkUfLszGNXml97t9m3WQNeu07OBZcH5f09RbIeCfKmeq3gPLy5ghlHSUKHU8tm29_4eh"
+        "https://discord.com/api/webhooks/1146622048521691197/EqbrBL9UtejvqrNJ3CV3wQ4WPL3IIE2Ax0Y9xdCCgd4I1bioAfCZBGUHdiDn4ez5njAS"
         , "Comandos Staff", log)
 end)
 
 AddEventHandler("SA:Server:StaffManagement:txAdmin:LogSystem", function(playerId, commandExecuted)
     if playerId == 0 then return end
-    local log = "**Info:**\n\t[" .. playerId ..
-        "] " .. GetPlayerName(playerId) .. " executou a ação: " .. commandExecuted
+    local log = "**Info:**\n\t" .. GetPlayerName(playerId) .. " executou a ação: " .. commandExecuted
     exports["SA_Scripting"]:LogToDiscord(playerId,
-        "https://discord.com/api/webhooks/1107323088699412611/YMAQvVr0J7QEGGJc7KH-EvstI2alCVjQdGyKqbkYdd1eTuS2d_0q9D-hBaU7AjBZOqQt"
+        "https://discord.com/api/webhooks/1146622109800468601/buS7Gu3QanDyTGxJjh2_0MODfM7dS9YI8Ke63Uzwfld7u-TCdMLn9I9gYCFYR27CeGjc"
         , "txAdmin", log)
 end)

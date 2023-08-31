@@ -139,19 +139,22 @@ AddEventHandler('playerConnecting', function(_, _, deferrals)
 				end
 			end
 			if not discordId then
-				deferrals.done('Não foi encontrado nenhum identificador do Discord. Verifica se tens a tua conta de Discord ligada ao FiveM e tenta novamente.')
+				deferrals.done(
+				'Não foi encontrado nenhum identificador do Discord. Verifica se tens a tua conta de Discord ligada ao FiveM e tenta novamente.')
 			end
 
 			local uId = MySQL.scalar.await('SELECT `ID` FROM `discord_whitelist` WHERE `DiscordID` = ?', { discordId })
 
 			if not uId then
-				deferrals.done('Não estás na whitelist do servidor. Verifica se tens a tua conta de Discord ligada ao FiveM e tenta novamente.')
+				deferrals.done(
+				'Não estás na whitelist do servidor. Verifica se tens a tua conta de Discord ligada ao FiveM e tenta novamente.')
 			end
 
 			if ESX.UniqueId[uId] then
-				deferrals.done('Já existe um jogador no servidor com o teu ID. Se achas que isto é um erro, abre ticket no Discord.')
+				deferrals.done(
+				'Já existe um jogador no servidor com o teu ID. Se achas que isto é um erro, abre ticket no Discord.')
 			end
-			
+
 			ESX.UniqueId[uId] = true
 			deferrals.done()
 		end
@@ -261,7 +264,9 @@ end)
 AddEventHandler('playerDropped', function()
 	awaitingRegistration[source] = nil
 	local xPlayer = ESX.GetPlayerFromId(source)
-	ESX.UniqueId[xPlayer.getuId()] = nil
+	if xPlayer then
+		ESX.UniqueId[xPlayer.getuId()] = nil
+	end
 	ESX.Players[GetIdentifier(source)] = nil
 end)
 

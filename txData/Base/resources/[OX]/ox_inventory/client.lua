@@ -1310,7 +1310,7 @@ RegisterNetEvent('ox_inventory:setPlayerInventory', function(currentDrops, inven
 
 	PlayerData.loaded = true
 
-	lib.notify({ description = locale('inventory_setup') })
+	--lib.notify({ description = locale('inventory_setup') })
 	Shops.refreshShops()
 	Inventory.Stashes()
 	Inventory.Evidence()
