@@ -4,7 +4,7 @@ local plano = 'cara'
 local camcoord
 local isOnCreator
 local invisible = false
-local finishCb = nil
+local finishCb = nil    
 
 --RegisterCommand("skincreator", function(source)
 --    TriggerEvent('VexCreator:loadCreator')
